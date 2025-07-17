@@ -251,12 +251,11 @@ void bucketSortMultithread(vector<int>& lista, int numBuckets, int numThreads, i
 }
 
 int main(int argc, char* argv[]) {
-    // Corrigir os caminhos para a estrutura de diretórios correta
     map<string, string> dirs_entrada = {
         {"Aleatorios", "../Arquivos/input/Aleatorios"},
         {"Ordenados", "../Arquivos/input/Ordenados"},
-        {"Reversos", "../Arquivos/input/Decrescentes"},
-        {"Parcialmente_Ordenados", "../../Arquivos/input/ParcialmenteOrdenados"}
+        {"Decrescentes", "../Arquivos/input/Decrescentes"},
+        {"Parcialmente_Ordenados", "../Arquivos/input/ParcialmenteOrdenados"}
     };
     vector<int> num_elementos = {100,200,500,1000,2000,5000,7500,10000,15000,30000,50000,75000,100000,200000,500000,750000,1000000,1250000,1500000,2000000};
 
@@ -273,7 +272,7 @@ int main(int argc, char* argv[]) {
         }
     }
     else {
-        numThreads = 8; // Valor padrão
+        numThreads = 16; // Valor padrão
     }
 
     cout << "Número de threads a serem usadas: " << numThreads << endl;
@@ -281,15 +280,14 @@ int main(int argc, char* argv[]) {
     // Verificar se o diretório de entrada existe
     cout << "Verificando estrutura de diretórios..." << endl;
     int execucao;
-    for (execucao = 1; execucao <= 5; execucao++) {
+    for (execucao = 1; execucao <= 6; execucao++) {
         for (const auto& tipo : dirs_entrada) {
             for (const auto& n : num_elementos) {
-                    // Montar nome do arquivo conforme padrão Python
                 string prefixo = tipo.first.substr(0,1);
                 transform(prefixo.begin(), prefixo.end(), prefixo.begin(), ::tolower);
                 string nomeArquivo = tipo.second + "/" + prefixo + to_string(n) + ".txt";
+                
 
-                // Debug: mostrar o caminho que está sendo procurado
                 cout << "Tentando ler arquivo: " << nomeArquivo << endl;
 
                 vector<int> dadosOriginais;
@@ -310,18 +308,23 @@ int main(int argc, char* argv[]) {
                 cout << "\n=== Executando Insertion Sort multithread ===" << endl;
                 insertionSortMultithread(listaMultithread, numThreads, n, tipo.first, execucao);
 
-
+                for(int i = 10; i<=1000; i*=10){
                 // Bucket Sort sequencial
-                vector<int> listaBucket = dadosOriginais;
-                cout << "\n=== Executando Bucket Sort sequencial ===" << endl;
-                cout << "Número de buckets: " << numBuckets << endl;
-                bucketSort(listaBucket, numBuckets, n, tipo.first, execucao);
+                    numBuckets = i;
+                    vector<int> listaBucket = dadosOriginais;
+                    cout << "\n=== Executando Bucket Sort sequencial ===" << endl;
+                    cout << "Número de buckets: " << numBuckets << endl;
+                    bucketSort(listaBucket, numBuckets, n, tipo.first, execucao);
+                }
 
-                // Bucket Sort multithread
-                vector<int> listaBucketMultithread = dadosOriginais;
-                cout << "\n=== Executando Bucket Sort multithread ===" << endl;
-                cout << "Número de buckets: " << numBuckets << endl;
-                bucketSortMultithread(listaBucketMultithread, numBuckets, numThreads, n, tipo.first, execucao);
+                for(int i = 10; i<=1000; i*=10){
+                    numBuckets = i;
+                    // Bucket Sort multithread
+                    vector<int> listaBucketMultithread = dadosOriginais;
+                    cout << "\n=== Executando Bucket Sort multithread ===" << endl;
+                    cout << "Número de buckets: " << numBuckets << endl;
+                    bucketSortMultithread(listaBucketMultithread, numBuckets, numThreads, n, tipo.first, execucao);
+                }
             }
         }
     }
